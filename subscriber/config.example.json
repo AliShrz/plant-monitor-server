@@ -1,0 +1,7 @@
+{
+    "broker": "MQTT_BROKER_HOSTNAME_OR_IP",
+    "port": 1883,
+    "username": "YOUR_MQTT_USERNAME",
+    "password": "YOUR_MQTT_PASSWORD",
+    "topic": "plant/1/state"
+}
