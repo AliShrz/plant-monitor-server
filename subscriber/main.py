@@ -4,6 +4,8 @@ from pathlib import Path
 
 import paho.mqtt.client as mqtt
 
+from process_data import process_data
+
 
 logging.basicConfig(
     level=logging.INFO,
@@ -50,12 +52,14 @@ def on_message(client, userdata, message):
     except json.JSONDecodeError:
         logging.warning("Received non-JSON message on %s", message.topic)
         return
+        
+    process_data(data)
 
-    logging.info("Topic: %s", message.topic)
-    logging.info(
-        "Payload: %s",
-        json.dumps(data, ensure_ascii=False),
-    )
+    # logging.info("Topic: %s", message.topic)
+    # logging.info(
+    #     "Payload: %s",
+    #     json.dumps(data, ensure_ascii=False),
+    # )
 
 
 def main():
