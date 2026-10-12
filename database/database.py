@@ -76,6 +76,33 @@ def save_measurement(
     connection.commit()
     connection.close()
 
+def get_latest_measurement(plant_id):
+    connection = sqlite3.connect(DB_PATH)
+    connection.row_factory = sqlite3.Row
+
+    try:
+        cursor = connection.cursor()
+
+        cursor.execute(
+            """
+            SELECT *
+            FROM measurements
+            WHERE plant_id = ?
+            ORDER BY timestamp DESC, id DESC
+            LIMIT 1
+            """,
+            (plant_id,),
+        )
+
+        row = cursor.fetchone()
+
+        if row is None:
+            return None
+
+        return dict(row)
+        
+    finally: 
+        connection.close()
 
 
 if __name__ == "__main__":
