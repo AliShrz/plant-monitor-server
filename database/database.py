@@ -20,7 +20,9 @@ def initialize_database():
             temperature REAL NOT NULL,
             humidity REAL NOT NULL,
             pressure REAL NOT NULL,
-            light REAL NOT NULL
+            light REAL NOT NULL,
+            wifi_ip TEXT NOT NULL,
+            wifi_rssi INTEGER NOT NULL
         )
     """)
 
@@ -37,6 +39,8 @@ def save_measurement(
     humidity,
     pressure,
     light,
+    wifi_ip,
+    wifi_rssi
 ):
     connection = sqlite3.connect(DB_PATH)
     cursor = connection.cursor()
@@ -50,9 +54,11 @@ def save_measurement(
             temperature,
             humidity,
             pressure,
-            light
+            light,
+            wifi_ip,
+            wifi_rssi
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
             timestamp,
@@ -62,6 +68,8 @@ def save_measurement(
             humidity,
             pressure,
             light,
+            wifi_ip,
+            wifi_rssi
         ),
     )
 
@@ -70,4 +78,5 @@ def save_measurement(
 
 
 
-initialize_database()
+if __name__ == "__main__":
+    initialize_database()

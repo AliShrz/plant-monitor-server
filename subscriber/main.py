@@ -1,18 +1,20 @@
 import json
 import logging
-from pathlib import Path
 
 import paho.mqtt.client as mqtt
 
-from process_data import process_data
+from pathlib import Path
+CONFIG_FILE = Path(__file__).with_name("config.json")
 
+
+from subscriber.process_data import process_data
+from database.database import initialize_database, save_measurement
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(levelname)s: %(message)s",
 )
 
-CONFIG_FILE = Path(__file__).with_name("config.json")
 
 
 def load_config():
@@ -53,7 +55,18 @@ def on_message(client, userdata, message):
         logging.warning("Received non-JSON message on %s", message.topic)
         return
         
-    process_data(data)
+    processed_data = process_data(data)
+    save_measurement(
+        processed_data["timestamp"],
+        processed_data["plant_id"],
+        processed_data["soil_moisture"],
+        processed_data["temperature"],
+        processed_data["humidity"],
+        processed_data["pressure"],
+        processed_data["light"],
+        processed_data["wifi_ip"],
+        processed_data["wifi_rssi"],
+    )
 
     # logging.info("Topic: %s", message.topic)
     # logging.info(
@@ -65,6 +78,8 @@ def on_message(client, userdata, message):
 def main():
     global CONFIG
     CONFIG = load_config()
+
+    initialize_database()
 
     client = mqtt.Client(
         callback_api_version=mqtt.CallbackAPIVersion.VERSION2,
