@@ -1,7 +1,7 @@
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 
-from database.database import get_latest_measurement
+from database.database import get_latest_measurement, get_measurements
 
 app = FastAPI(
     title="Plant Monitor API",
@@ -21,3 +21,18 @@ def get_latest_plant_measurement(plant_id: int):
         )
 
     return measurement
+
+@app.get("/api/plants/{plant_id}/measurements")
+def get_plant_measurements(
+    plant_id: int,
+    limit: int = Query(default=20, ge=1, le=100)
+):
+    measurements = get_measurements(plant_id, limit)
+
+    if not measurements:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No measurements found for plant {plant_id}",
+        )
+
+    return measurements

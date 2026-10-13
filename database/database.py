@@ -107,3 +107,28 @@ def get_latest_measurement(plant_id):
 
 if __name__ == "__main__":
     initialize_database()
+
+def get_measurements(plant_id, limit):
+    connection = sqlite3.connect(DB_PATH)
+    connection.row_factory = sqlite3.Row
+
+    try:
+        cursor = connection.cursor()
+
+        cursor.execute(
+            """
+            SELECT *
+            FROM measurements
+            WHERE plant_id = ?
+            ORDER BY timestamp DESC, id DESC
+            LIMIT ?
+            """,
+            (plant_id, limit),
+        )
+
+        rows = cursor.fetchall()
+
+        return [dict(row) for row in rows]
+
+    finally:
+        connection.close()
