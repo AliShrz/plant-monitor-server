@@ -2,6 +2,8 @@
 from fastapi import FastAPI, HTTPException, Query
 
 from database.database import get_latest_measurement, get_measurements
+from backend.models import MeasurementResponse
+
 
 app = FastAPI(
     title="Plant Monitor API",
@@ -10,7 +12,10 @@ app = FastAPI(
 )
 
 
-@app.get("/api/plants/{plant_id}/latest")
+@app.get(
+    "/api/plants/{plant_id}/latest",
+    response_model=MeasurementResponse
+)
 def get_latest_plant_measurement(plant_id: int):
     measurement = get_latest_measurement(plant_id)
 
@@ -22,7 +27,10 @@ def get_latest_plant_measurement(plant_id: int):
 
     return measurement
 
-@app.get("/api/plants/{plant_id}/measurements")
+@app.get(
+    "/api/plants/{plant_id}/measurements",
+    response_model=list[MeasurementResponse]
+)
 def get_plant_measurements(
     plant_id: int,
     limit: int = Query(default=20, ge=1, le=100)
