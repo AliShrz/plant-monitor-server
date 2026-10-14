@@ -151,6 +151,7 @@ The dashboard will communicate with the backend through the REST API. It will no
 ```text
 plant-monitor/
 
+├── .venv/ 
 ├── backend/
 │   ├── __init__.py
 │   ├── main.py
@@ -174,9 +175,9 @@ plant-monitor/
 │   ├── __init__.py
 │   ├── main.py
 │   ├── process_data.py
-│   ├── config.example.json
-│   └── requirements.txt
+│   └── config.example.json
 │
+├── requirements.txt
 ├── .gitignore
 └── README.md
 ```
