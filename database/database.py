@@ -156,6 +156,36 @@ def update_plant_name(plant_id, new_name):
     finally:
         connection.close()
 
+
+def reset_plant(plant_id):
+    connection = sqlite3.connect(DB_PATH)
+
+    try:
+        cursor = connection.cursor()
+
+        cursor.execute(
+            "SELECT 1 FROM plants WHERE id = ?",
+            (plant_id,),
+        )
+
+        if cursor.fetchone() is None:
+            return False
+
+        cursor.execute(
+            "DELETE FROM measurements WHERE plant_id = ?",
+            (plant_id,),
+        )
+
+        connection.commit()
+        return True
+
+    except Exception:
+        connection.rollback()
+        raise
+
+    finally:
+        connection.close()
+
 def delete_plant(plant_id):
     connection = sqlite3.connect(DB_PATH)
 
@@ -163,16 +193,34 @@ def delete_plant(plant_id):
         cursor = connection.cursor()
 
         cursor.execute(
-            """
-            DELETE FROM plants
-            WHERE id = ?
-            """,
+            "SELECT 1 FROM plants WHERE id = ?",
+            (plant_id,),
+        )
+
+        if cursor.fetchone() is None:
+            return False
+
+        cursor.execute(
+            "DELETE FROM measurements WHERE plant_id = ?",
+            (plant_id,),
+        )
+
+        cursor.execute(
+            "DELETE FROM devices WHERE plant_id = ?",
+            (plant_id,),
+        )
+
+        cursor.execute(
+            "DELETE FROM plants WHERE id = ?",
             (plant_id,),
         )
 
         connection.commit()
+        return True
 
-        return cursor.rowcount > 0
+    except Exception:
+        connection.rollback()
+        raise
 
     finally:
         connection.close()
